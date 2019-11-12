@@ -65,7 +65,7 @@ mongoose.connect('mongodb://localhost:33017/charity').catch(error => {
 });
 mongoose.connection.once('open', () => {
   mongoose.set('debug', true);
-  let port = 8000;
+  let port = 7777;
 	app.listen(port, () =>
 		console.log(`Server running on http://localhost:${port}/`)
 	);
