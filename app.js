@@ -30,6 +30,7 @@ if(!isProduction) {
 
 //Models & routes
 require('./models/Users');
+require('./models/Goals');
 require('./config/passport');
 app.use(require('./routes'));
 

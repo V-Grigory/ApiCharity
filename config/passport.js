@@ -12,7 +12,8 @@ passport.use(new LocalStrategy({
     .then((user) => {
       if(!user || !user.validatePassword(password)) {
 				// возврат 500. поправить.
-        return done(null, false, { errors: { 'email or password': 'is invalid' } });
+        // return done(null, false, { errors: { 'email or password': 'is invalid' } });
+        return done(null, false);
       }
 
       return done(null, user);

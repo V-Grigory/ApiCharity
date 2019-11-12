@@ -6,7 +6,7 @@ const GoalsSchema = new Schema({
 	type: String,
 	title: String,
 	description: String,
-	params: String,
+	params: Object,
 });
 
 mongoose.model('Goals', GoalsSchema);

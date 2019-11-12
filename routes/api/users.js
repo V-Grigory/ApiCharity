@@ -7,6 +7,14 @@ const Users = mongoose.model('Users');
 router.post('/registration', auth.optional, (req, res, next) => {
   const { body: { user } } = req;
 
+  if(!user) {
+    return res.status(422).json({
+      errors: {
+        user: 'object is required',
+      },
+    });
+  }
+
   if(!user.email) {
     return res.status(422).json({
       errors: {
@@ -23,16 +31,41 @@ router.post('/registration', auth.optional, (req, res, next) => {
     });
   }
 
-  const finalUser = new Users(user);
+  Users.findOne({ email: user.email })
+    .then((v) => {
+      if(v) {
+        return res.status(422).json({
+          errors: { message: 'This email already exist' }
+        })
+      }
+      createUser()
+    })
+    .catch(() => {
+      return res.status(500).json({
+        errors: { message: 'Error BD' }
+      })
+    });
 
-  finalUser.setPassword(user.password);
+  const createUser = () => {
+    const finalUser = new Users(user);
 
-  return finalUser.save()
-    .then(() => res.json({ user: finalUser.toAuthJSON() }));
+    finalUser.setPassword(user.password);
+
+    return finalUser.save()
+        .then(() => res.json({ user: finalUser.toAuthJSON() }));
+  }
 });
 
 router.post('/login', auth.optional, (req, res, next) => {
   const { body: { user } } = req;
+
+  if(!user) {
+    return res.status(422).json({
+      errors: {
+        email: 'user object is required',
+      },
+    });
+  }
 
   if(!user.email) {
     return res.status(422).json({
@@ -52,7 +85,12 @@ router.post('/login', auth.optional, (req, res, next) => {
 
   return passport.authenticate('local', { session: false }, (err, passportUser, info) => {
     if(err) {
-      return next(err);
+      // return next(err);
+      return res.status(422).json({
+        errors: {
+          message: 'email or password: is invalid',
+        },
+      });
     }
 
     if(passportUser) {
