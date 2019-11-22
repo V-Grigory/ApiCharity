@@ -1,32 +1,22 @@
 const mongoose = require('mongoose');
-// const passport = require('passport');
 const router = require('express').Router();
+const multer = require('multer');
 const auth = require('../auth');
+const checkAccess = require('../checkAccess');
 const Goals = mongoose.model('Goals');
 
-router.get('/', auth.required, (req, res, next) => {
-  // const { payload: { id } } = req;
-  // let id = req.params.id
+router.get('/', (req, res, next) => {
+  let fields = 'type title description params';
 
-  return Goals.find({}, 'type title description params')
-    .then((goals) => {
-      if(!goals) {
-        return res.sendStatus(400);
-      }
-
-      return res.json({ goals: goals });
-    });
-
-  // Goals.find({ type: 'человек'}, function (err, docs) {
-  //   if(!docs) {
-  //     return res.sendStatus(400);
-  //   }
-  //   console.log(docs)
-  //   return res.json({ goals: docs });
-  // });
+  return Goals.find({}, fields).then((goals) => {
+    if(!goals) {
+      return res.sendStatus(204);
+    }
+    return res.json({ goals: goals });
+  });
 });
 
-router.post('/', auth.required, (req, res, next) => {
+router.post('/', auth.required, checkAccess.onlyAdmin, (req, res, next) => {
 	const { body: { goal } } = req;
 
   if(!goal) {
@@ -65,6 +55,15 @@ router.post('/', auth.required, (req, res, next) => {
 
 	return createGoal.save()
 		.then(() => res.json({ goal: createGoal }));
+});
+
+router.post('/upload', function (req, res, next) {
+
+  let filedata = req.file;
+  if(!filedata)
+    res.send('Ошибка при загрузке файла');
+  else
+    res.send('Файл загружен');
 });
 
 module.exports = router;

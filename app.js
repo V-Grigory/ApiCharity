@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const cors = require('cors');
 const mongoose = require('mongoose');
+// const multer = require('multer');
 const errorHandler = require('errorhandler');
 
 //Configure mongoose's promise to global promise
@@ -17,12 +18,23 @@ const isProduction = process.env.NODE_ENV === 'production';
 const app = express();
 
 //Configure our app
+// const storageConfig = multer.diskStorage({
+//   destination: (req, file, cb) =>{
+//     cb(null, path.join(__dirname, 'public/uploads'));
+//   },
+//   filename: (req, file, cb) =>{
+//     cb(null, file.originalname);
+//   }
+// });
+
 app.use(cors());
 app.use(require('morgan')('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({ secret: 'Api-Charity', cookie: { maxAge: 60000 }, resave: false, saveUninitialized: false }));
+app.use(session({ secret: 'Api-Charity', cookie: { maxAge: 60000 },
+  resave: false, saveUninitialized: false }));
+//app.use(multer({storage:storageConfig}).single('avatar'));
 
 if(!isProduction) {
   app.use(errorHandler());
@@ -31,6 +43,7 @@ if(!isProduction) {
 //Models & routes
 require('./models/Users');
 require('./models/Goals');
+require('./models/Lotteries');
 require('./config/passport');
 app.use(require('./routes'));
 
