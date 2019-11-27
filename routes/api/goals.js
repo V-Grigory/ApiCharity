@@ -1,69 +1,95 @@
+// const path = require('path');
 const mongoose = require('mongoose');
 const router = require('express').Router();
-const multer = require('multer');
 const auth = require('../auth');
-const checkAccess = require('../checkAccess');
+// const logger = require('../../logger');
+const utils = require('../../utils');
 const Goals = mongoose.model('Goals');
 
 router.get('/', (req, res, next) => {
-  let fields = 'type title description params';
+  let fields = 'type title description';
 
   return Goals.find({}, fields).then((goals) => {
-    if(!goals) {
-      return res.sendStatus(204);
-    }
     return res.json({ goals: goals });
   });
 });
 
-router.post('/', auth.required, checkAccess.onlyAdmin, (req, res, next) => {
+router.get('/:_id', (req, res, next) => {
+  let fields = 'type title description';
+
+  return Goals.findById(req.params._id, fields).then((goal) => {
+    if(!goal) {
+      return res.status(400).json({
+        errors: { message: 'Goal does not exist' }
+      });
+    }
+    return res.json({ goal: goal });
+  })
+  .catch(() => {
+    return res.status(500).json({
+      errors: { message: 'Error BD' }
+    })
+  });
+});
+
+router.post('/', auth.required, utils.accessOnlyAdmin, (req, res, next) => {
 	const { body: { goal } } = req;
 
-  if(!goal) {
+  if( !utils.checkGoalData(goal).ok ) {
     return res.status(422).json({
-      errors: {
-        goal: 'object is required',
-      },
-    });
-  }
-
-	if(!goal.type) {
-		return res.status(422).json({
-			errors: {
-				type: 'is required',
-			},
-		});
-	}
-
-  if(!goal.title) {
-    return res.status(422).json({
-      errors: {
-        title: 'is required',
-      },
-    });
-  }
-
-  if(!goal.description) {
-    return res.status(422).json({
-      errors: {
-        description: 'is required',
-      },
+      errors: utils.checkGoalData(goal).msg
     });
   }
 
 	const createGoal = new Goals(goal);
-
 	return createGoal.save()
 		.then(() => res.json({ goal: createGoal }));
 });
 
-router.post('/upload', function (req, res, next) {
+router.put('/:_id', auth.required, utils.accessOnlyAdmin, (req, res, next) => {
+  const { body: { goal } } = req;
 
-  let filedata = req.file;
-  if(!filedata)
-    res.send('Ошибка при загрузке файла');
-  else
-    res.send('Файл загружен');
+  if( !utils.checkGoalData(goal, 'forUpdate').ok ) {
+    return res.status(422).json({
+      errors: utils.checkGoalData(goal, 'forUpdate').msg
+    });
+  }
+
+  let query = {_id: req.params._id};
+  let updData = {};
+  if(goal.type) updData.type = goal.type;
+  if(goal.title) updData.title = goal.title;
+  if(goal.description) updData.description = goal.description;
+
+  Goals.findOneAndUpdate(query, updData).then(() => {
+    return res.status(200).json({
+      message: 'Goal successfully update'
+    });
+  }).catch(() => {
+    return res.status(400).json({
+      errors: { message: 'This goal does not exist' }
+    });
+  })
+});
+
+router.delete('/:_id', auth.required, utils.accessOnlyAdmin, (req, res, next) => {
+
+  Goals.findByIdAndRemove(req.params._id).then((v) => {
+    if(v) {
+      // тут реализация удаления привязанных картинок !!!
+      return res.status(200).json({
+        message: 'Goal successfully deleted'
+      });
+    }
+    return res.status(400).json({
+      errors: { message: 'This goal does not exist' }
+    });
+  })
+  .catch(() => {
+    return res.status(400).json({
+      errors: { message: 'This goal does not exist' }
+    });
+  })
 });
 
 module.exports = router;

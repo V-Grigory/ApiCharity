@@ -6,6 +6,8 @@ const logger = require('../../logger');
 
 router.use('/users', require('./users'));
 router.use('/goals', require('./goals'));
+router.use('/images', require('./images'));
+router.use('/rules', require('./rules'));
 router.use('/lotteries', require('./lotteries'));
 
 router.post('/sendemail', auth.required, (req, res, next) => {

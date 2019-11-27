@@ -2,10 +2,9 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const GoalsSchema = new Schema({
-	type: String,
-	title: String,
-	description: String,
-	params: Object,
+	type: {type: String, default: ''},
+	title: {type: String, default: ''},
+	description: {type: String, default: ''}
 });
 
 mongoose.model('Goals', GoalsSchema);

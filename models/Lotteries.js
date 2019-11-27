@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 
 const LotteriesSchema = new Schema({
   date: {type: Date, default: new Date()},
-  members: [{ids: Number, winSumm: {type: Number, default: 0}}],
+  members: [{id: Number, winSum: {type: Number, default: 0}}],
   statusLottery: {type: String, default: 'open'} // open, close
 });
 

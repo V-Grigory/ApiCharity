@@ -29,14 +29,23 @@ router.post('/joinlottery', auth.required, (req, res, next) => {
       });
     }
     if(user[0].balance >= appConfig.balanceAmountForJoinLottery) {
-      lotteryController.addUserToLottery(user[0]).then(() => {
+      lotteryController.addUserToLottery(user[0]).then((v) => {
         return res.status(200).json({
-          message: 'User successfully joined the lottery'
+          message: v
         });
       });
+    } else {
+      return res.status(400).json({
+        errors: { message: 'Balance not enough' }
+      });
     }
+  })
+  .catch(() => {
+    // return res.status(500).json({
+    //   errors: { message: 'Error BD' }
+    // })
     return res.status(400).json({
-      errors: { message: 'Balance not enough' }
+      errors: { message: 'User does not exist' }
     });
   });
 

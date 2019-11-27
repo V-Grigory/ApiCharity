@@ -2,33 +2,15 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const router = require('express').Router();
 const auth = require('../auth');
-const validate = require('../validate');
+const utils = require('../../utils');
 const Users = mongoose.model('Users');
 
 router.post('/registration', auth.optional, (req, res, next) => {
   const { body: { user } } = req;
 
-  if(!user) {
+  if( !utils.checkUserData(user).ok ) {
     return res.status(422).json({
-      errors: {
-        user: 'object is required',
-      },
-    });
-  }
-
-  if(!user.email) {
-    return res.status(422).json({
-      errors: {
-        email: 'is required',
-      },
-    });
-  }
-
-  if(!user.password) {
-    return res.status(422).json({
-      errors: {
-        password: 'is required',
-      },
+      errors: utils.checkUserData(user).msg
     });
   }
 
@@ -80,27 +62,9 @@ router.post('/registration', auth.optional, (req, res, next) => {
 router.post('/login', auth.optional, (req, res, next) => {
   const { body: { user } } = req;
 
-  if(!user) {
+  if( !utils.checkUserData(user).ok ) {
     return res.status(422).json({
-      errors: {
-        email: 'user object is required',
-      },
-    });
-  }
-
-  if(!user.email) {
-    return res.status(511).json({
-      errors: {
-        email: 'is required',
-      },
-    });
-  }
-
-  if(!user.password) {
-    return res.status(511).json({
-      errors: {
-        password: 'is required',
-      },
+      errors: utils.checkUserData(user).msg
     });
   }
 
@@ -127,7 +91,7 @@ router.post('/login', auth.optional, (req, res, next) => {
 
 router.get('/:id', auth.required, (req, res, next) => {
 
-  if( !validate.userId(req.params.id) ) {
+  if( !utils.validateUserId(req.params.id) ) {
     return res.status(400).json({
       errors: { message: 'Invalid user id' }
     });
@@ -151,18 +115,38 @@ router.get('/:id', auth.required, (req, res, next) => {
   });
 });
 
-//GET current route (required, only authenticated users have access)
-// router.get('/current', auth.required, (req, res, next) => {
-//   const { payload: { id } } = req;
-//
-//   return Users.findById(id)
-//     .then((user) => {
-//       if(!user) {
-//         return res.sendStatus(400);
-//       }
-//
-//       return res.json({ user: user.toAuthJSON() });
-//     });
-// });
+router.delete('/:id', auth.required, utils.accessOnlyAdmin, (req, res, next) => {
+
+  if( !utils.validateUserId(req.params.id) ) {
+    return res.status(400).json({
+      errors: { message: 'Invalid user id' }
+    });
+  }
+
+  Users.find({id: req.params.id}, 'id role').then((user) => {
+    if(user.length === 0) {
+      return res.status(400).json({
+        errors: { message: 'User does not exist' }
+      });
+    }
+    if(user[0].role === 'admin') {
+      return res.status(400).json({
+        errors: { message: 'Admins are protected from deletion!' }
+      });
+    }
+    Users.deleteOne({ id: user[0].id }, function (err) {
+      if (err) {
+        return res.status(400).json({
+          errors: { message: 'Error delete user' }
+        });
+      }
+      return res.status(200).json({
+        success: {
+          message: 'User successfully deleted!',
+        },
+      });
+    });
+  });
+});
 
 module.exports = router;
