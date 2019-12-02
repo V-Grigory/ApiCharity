@@ -5,10 +5,10 @@ const auth = require('../auth');
 const Users = mongoose.model('Users');
 const lotteryController = require('../../controllers/lotteries');
 
-router.post('/joinlottery', auth.required, (req, res, next) => {
-  const { payload: { id, role } } = req;
+router.post('/join', auth.required, (req, res, next) => {
+  const { payload: { _id, role } } = req;
 
-  if(!id || !role) {
+  if(!_id || !role) {
     return res.status(400).json({
       errors: { message: 'Not exists data in token!' }
     });
@@ -22,7 +22,7 @@ router.post('/joinlottery', auth.required, (req, res, next) => {
     });
   }
 
-  Users.find({id: id, role: 'user'}, 'id balance').then((user) => {
+  Users.find({_id: _id, role: 'user'}, 'id balance').then((user) => {
     if(user.length === 0) {
       return res.status(400).json({
         errors: { message: 'User does not exist' }
@@ -49,6 +49,34 @@ router.post('/joinlottery', auth.required, (req, res, next) => {
     });
   });
 
+});
+
+router.get('/timetostart', (req, res, next) => {
+  return res.status(200).json({
+    timetostart: lotteryController.timeToStart()
+  });
+});
+
+router.get('/result', auth.required, (req, res, next) => {
+  const { payload: { _id } } = req;
+  Users.findById(_id, 'id balance').then(user => {
+    if(user) {
+      lotteryController.resultForUser(user).then(v => {
+        return res.status(200).json(v)
+      });
+    } else {
+      return res.status(400).json({
+        errors: { message: 'User does not exist' }
+      });
+    }
+  });
+});
+
+router.get('/start', (req, res, next) => {
+  lotteryController.startLottery();
+  return res.status(200).json({
+    errors: { message: 'Lottery started !!!' }
+  });
 });
 
 module.exports = router;

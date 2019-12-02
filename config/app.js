@@ -1,4 +1,4 @@
-const balanceAmountForJoinLottery = 120;
+const balanceAmountForJoinLottery = 10;
 
 module.exports = appConfig = {
   balanceAmountForJoinLottery

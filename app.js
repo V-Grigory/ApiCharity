@@ -6,6 +6,11 @@ const session = require('express-session');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const errorHandler = require('errorhandler');
+const CronJob = require('cron').CronJob;
+
+new CronJob('0 20 * * *', function() {
+  console.log('You will see this message every second');
+}, null, true, 'Asia/Yekaterinburg');
 
 //Configure mongoose's promise to global promise
 mongoose.promise = global.Promise;

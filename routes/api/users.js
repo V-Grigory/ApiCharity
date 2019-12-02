@@ -89,6 +89,20 @@ router.post('/login', auth.optional, (req, res, next) => {
   })(req, res, next);
 });
 
+router.get('/balance', auth.required, (req, res, next) => {
+  const { payload: { _id } } = req;
+  Users.findById(_id, 'balance').then(user => {
+    if(user) {
+      return res.json({ balance: user.balance });
+    } else {
+      return res.status(400).json({
+        errors: { message: 'User does not exist' }
+      });
+    }
+  });
+});
+
+/*
 router.get('/:id', auth.required, (req, res, next) => {
 
   if( !utils.validateUserId(req.params.id) ) {
@@ -148,5 +162,6 @@ router.delete('/:id', auth.required, utils.accessOnlyAdmin, (req, res, next) => 
     });
   });
 });
+*/
 
 module.exports = router;

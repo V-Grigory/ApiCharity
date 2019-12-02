@@ -30,8 +30,8 @@ UsersSchema.methods.generateJWT = function() {
 
   return jwt.sign({
     email: this.email,
-    // _id: this._id,
-    id: this.id,
+    _id: this._id,
+    // id: this.id,
     role: this.role,
     exp: parseInt(expirationDate.getTime() / 1000, 10),
   }, 'secret');
