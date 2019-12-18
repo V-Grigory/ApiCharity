@@ -20,14 +20,14 @@ router.get('/:_id', (req, res, next) => {
   return Goals.findById(req.params._id, fields).then((goal) => {
     if(!goal) {
       return res.status(400).json({
-        errors: { message: 'Goal does not exist' }
+        errors: 'Goal does not exist'
       });
     }
     return res.json({ goal: goal });
   })
   .catch(() => {
     return res.status(500).json({
-      errors: { message: 'Error BD' }
+      errors: 'Error BD'
     })
   });
 });
@@ -67,7 +67,7 @@ router.put('/:_id', auth.required, utils.accessOnlyAdmin, (req, res, next) => {
     });
   }).catch(() => {
     return res.status(400).json({
-      errors: { message: 'This goal does not exist' }
+      errors: 'This goal does not exist'
     });
   })
 });
@@ -82,12 +82,12 @@ router.delete('/:_id', auth.required, utils.accessOnlyAdmin, (req, res, next) =>
       });
     }
     return res.status(400).json({
-      errors: { message: 'This goal does not exist' }
+      errors: 'This goal does not exist'
     });
   })
   .catch(() => {
     return res.status(400).json({
-      errors: { message: 'This goal does not exist' }
+      errors: 'This goal does not exist'
     });
   })
 });

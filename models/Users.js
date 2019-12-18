@@ -10,7 +10,9 @@ const UsersSchema = new Schema({
   email: String,
   hash: String,
   salt: String,
-	balance: { type: Number, default: 0 }
+	balance: { type: Number, default: 0 },
+  billId: { type: String, default: '' },
+  billStatus: { type: String, default: '' }
 });
 
 UsersSchema.methods.setPassword = function(password) {

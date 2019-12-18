@@ -10,22 +10,20 @@ router.post('/join', auth.required, (req, res, next) => {
 
   if(!_id || !role) {
     return res.status(400).json({
-      errors: { message: 'Not exists data in token!' }
+      errors: 'Not exists data in token!'
     });
   }
 
   if(role === 'admin') {
     return res.status(400).json({
-      errors: {
-        message: 'User with the admin role cannot participate in the lottery'
-      }
+      errors: 'User with the admin role cannot participate in the lottery'
     });
   }
 
   Users.find({_id: _id, role: 'user'}, 'id balance').then((user) => {
     if(user.length === 0) {
       return res.status(400).json({
-        errors: { message: 'User does not exist' }
+        errors: 'User does not exist'
       });
     }
     if(user[0].balance >= appConfig.balanceAmountForJoinLottery) {
@@ -36,7 +34,7 @@ router.post('/join', auth.required, (req, res, next) => {
       });
     } else {
       return res.status(400).json({
-        errors: { message: 'Balance not enough' }
+        errors: 'Balance not enough'
       });
     }
   })
@@ -45,7 +43,7 @@ router.post('/join', auth.required, (req, res, next) => {
     //   errors: { message: 'Error BD' }
     // })
     return res.status(400).json({
-      errors: { message: 'User does not exist' }
+      errors: 'User does not exist'
     });
   });
 
@@ -66,7 +64,7 @@ router.get('/result', auth.required, (req, res, next) => {
       });
     } else {
       return res.status(400).json({
-        errors: { message: 'User does not exist' }
+        errors: 'User does not exist'
       });
     }
   });
@@ -75,7 +73,7 @@ router.get('/result', auth.required, (req, res, next) => {
 router.get('/start', (req, res, next) => {
   lotteryController.startLottery();
   return res.status(200).json({
-    errors: { message: 'Lottery started !!!' }
+    errors: 'Lottery started !!!'
   });
 });
 

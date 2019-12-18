@@ -97,7 +97,7 @@ const resultForUser = (user) => {
           responce({iswin: false})
         }
       } else {
-        responce('Lottery has not yet been started')
+        responce('Lottery has not yet been finished')
       }
     })
   })

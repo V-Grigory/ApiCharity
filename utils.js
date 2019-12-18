@@ -1,17 +1,22 @@
+// let nowPlusOneDay = () => {
+//   let d = new Date();
+//   d.setDate(d.getDate() + 1);
+//   return d;
+// };
 
 const checkUserData = (v) => {
   let ok = true;
   if(!v) {
     ok = false;
-    return {ok: ok, msg: {user: 'object is required'}};
+    return {ok: ok, msg: 'object User is required'};
   }
   if(!v.email) {
     ok = false;
-    return {ok: ok, msg: {email: 'is required'}};
+    return {ok: ok, msg: 'email is required'};
   }
   if(!v.password) {
     ok = false;
-    return {ok: ok, msg: {password: 'is required'}};
+    return {ok: ok, msg: 'password is required'};
   }
   return {ok};
 };
@@ -21,15 +26,15 @@ const checkRuleData = (v, target = 'forInsert') => {
     let ok = true;
     if(!v) {
       ok = false;
-      return {ok: ok, msg: {rule: 'object is required'}};
+      return {ok: ok, msg: 'object Rule is required'};
     }
     if(!v.title) {
       ok = false;
-      return {ok: ok, msg: {title: 'is required'}};
+      return {ok: ok, msg: 'title is required'};
     }
     if(!v.description) {
       ok = false;
-      return {ok: ok, msg: {description: 'is required'}};
+      return {ok: ok, msg: 'description is required'};
     }
     return {ok};
   }
@@ -37,12 +42,12 @@ const checkRuleData = (v, target = 'forInsert') => {
     let ok = true;
     if(!v) {
       ok = false;
-      return {ok: ok, msg: {rule: 'object is required'}};
+      return {ok: ok, msg: 'object Rule is required'};
     }
     if(!v.title && !v.description) {
       ok = false;
     }
-    return {ok: ok, msg: {error: 'No data for update'}};
+    return {ok: ok, msg: 'No data for update'};
   }
 };
 
@@ -51,19 +56,19 @@ const checkGoalData = (v, target = 'forInsert') => {
     let ok = true;
     if(!v) {
       ok = false;
-      return {ok: ok, msg: {goal: 'object is required'}};
+      return {ok: ok, msg: 'object Goal is required'};
     }
     if(!v.type) {
       ok = false;
-      return {ok: ok, msg: {type: 'is required'}};
+      return {ok: ok, msg: 'type is required'};
     }
     if(!v.title) {
       ok = false;
-      return {ok: ok, msg: {title: 'is required'}};
+      return {ok: ok, msg: 'title is required'};
     }
     if(!v.description) {
       ok = false;
-      return {ok: ok, msg: {description: 'is required'}};
+      return {ok: ok, msg: 'description is required'};
     }
     return {ok};
   }
@@ -71,12 +76,12 @@ const checkGoalData = (v, target = 'forInsert') => {
     let ok = true;
     if(!v) {
       ok = false;
-      return {ok: ok, msg: {goal: 'object is required'}};
+      return {ok: ok, msg: 'object Goal is required'};
     }
     if(!v.type && !v.title && !v.description) {
       ok = false;
     }
-    return {ok: ok, msg: {error: 'No data for update'}};
+    return {ok: ok, msg: 'No data for update'};
   }
 };
 
@@ -131,7 +136,7 @@ const accessOnlyAdmin = (req, res, next) => {
     next();
   } else {
     return res.status(403).json({
-      errors: { message: 'FORBIDDEN!' }
+      errors: 'FORBIDDEN!'
     });
   }
 };

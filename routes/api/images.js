@@ -66,7 +66,7 @@ router.get('/:_id', (req, res, next) => {
   return Images.findById(req.params._id, fields).then((image) => {
     if(!image) {
       return res.status(400).json({
-        errors: { message: 'Image does not exist' }
+        errors: 'Image does not exist'
       });
     }
     return res.json({ image: image });
@@ -76,7 +76,7 @@ router.get('/:_id', (req, res, next) => {
     //   errors: { message: 'Error BD' }
     // })
     return res.status(400).json({
-      errors: { message: 'Image does not exist' }
+      errors: 'Image does not exist'
     });
   });
 });
@@ -87,14 +87,14 @@ router.post('/', auth.required, utils.accessOnlyAdmin, upload, (req, res, next) 
 
   if(req.files.length === 0) {
     return res.status(400).json({
-      errors: { message: 'No images!' }
+      errors: 'No images!'
     });
   }
 
   if(!req.body.goal_id) {
     deleteFiles(req.files);
     return res.status(400).json({
-      errors: { message: 'No or incorrect goal_id!' }
+      errors: 'No or incorrect goal_id!'
     });
   }
 
@@ -102,7 +102,7 @@ router.post('/', auth.required, utils.accessOnlyAdmin, upload, (req, res, next) 
     if(!goal) {
       deleteFiles(req.files);
       return res.status(400).json({
-        errors: { message: 'Goal does not exist' }
+        errors: 'Goal does not exist'
       });
     }
     let loadedImages = [];
@@ -126,7 +126,7 @@ router.post('/', auth.required, utils.accessOnlyAdmin, upload, (req, res, next) 
   .catch(() => {
     deleteFiles(req.files);
     return res.status(500).json({
-      errors: { message: 'Error BD' }
+      errors: 'Error BD'
     })
   });
 });
@@ -164,13 +164,13 @@ router.delete('/:_id', auth.required, utils.accessOnlyAdmin, (req, res, next) =>
       });
     } else {
       return res.status(400).json({
-        errors: { message: 'This image does not exist' }
+        errors: 'This image does not exist'
       });
     }
   })
   .catch(() => {
     return res.status(400).json({
-      errors: { message: 'This image does not exist' }
+      errors: 'This image does not exist'
     });
   })
 });

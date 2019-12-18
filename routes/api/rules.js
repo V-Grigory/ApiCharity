@@ -50,7 +50,7 @@ router.put('/:_id', auth.required, utils.accessOnlyAdmin, (req, res, next) => {
     });
   }).catch(() => {
     return res.status(400).json({
-      errors: { message: 'This rule does not exist' }
+      errors: 'This rule does not exist'
     });
   })
 });
@@ -64,12 +64,12 @@ router.delete('/:_id', auth.required, utils.accessOnlyAdmin, (req, res, next) =>
       });
     }
     return res.status(400).json({
-      errors: { message: 'This rule does not exist' }
+      errors: 'This rule does not exist'
     });
   })
   .catch(() => {
     return res.status(400).json({
-      errors: { message: 'This rule does not exist' }
+      errors: 'This rule does not exist'
     });
   })
 });

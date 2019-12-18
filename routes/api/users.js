@@ -4,6 +4,8 @@ const router = require('express').Router();
 const auth = require('../auth');
 const utils = require('../../utils');
 const Users = mongoose.model('Users');
+const QiwiBillPaymentsAPI = require('@qiwi/bill-payments-node-js-sdk');
+const SECRET_KEY = 'eyJ2ZXJzaW9uIjoiUDJQIiwiZGF0YSI6eyJwYXlpbl9tZXJjaGFudF9zaXRlX3VpZCI6InUzbjI0Mi0wMCIsInVzZXJfaWQiOiI3OTIyNDgxOTAwMCIsInNlY3JldCI6ImQwNWQzNjViZDdmNzk4MGYyOGY2NDAxMzhmMGJhNmI2NzViYTgyNjNjMDI0NzNhM2JmMDM2MjU5NzQ4ODBjYzYifX0=';
 
 router.post('/registration', auth.optional, (req, res, next) => {
   const { body: { user } } = req;
@@ -19,7 +21,7 @@ router.post('/registration', auth.optional, (req, res, next) => {
       Users.find({}, 'id email').then(users => {
         if(users.find(v => v.email === user.email)) {
           return res.status(422).json({
-            errors: { message: 'This email already exist' }
+            errors: 'This email already exist'
           })
         }
         if(users.length === 0) {
@@ -30,7 +32,7 @@ router.post('/registration', auth.optional, (req, res, next) => {
       })
       .catch(() => {
         return res.status(500).json({
-          errors: { message: 'Error BD' }
+          errors: 'Error BD'
         })
       });
     });
@@ -72,9 +74,7 @@ router.post('/login', auth.optional, (req, res, next) => {
     if(err) {
       // return next(err);
       return res.status(422).json({
-        errors: {
-          message: 'email or password: is invalid',
-        },
+        errors: 'email or password: is invalid'
       });
     }
 
@@ -91,9 +91,182 @@ router.post('/login', auth.optional, (req, res, next) => {
 
 router.get('/balance', auth.required, (req, res, next) => {
   const { payload: { _id } } = req;
-  Users.findById(_id, 'balance').then(user => {
+
+  Users.findById(_id, 'balance billId billStatus').then(user => {
     if(user) {
-      return res.json({ balance: user.balance });
+
+      if (user.billStatus !== 'WAITING') {
+        return res.json({ balance: user.balance });
+      }
+
+      if (user.billStatus === 'WAITING') {
+        const qiwiApi = new QiwiBillPaymentsAPI(SECRET_KEY);
+
+        qiwiApi.getBillInfo(user.billId).then(data => {
+          console.log(data);
+          let updData = {
+            billStatus: data.status.value
+          };
+          if (data.status.value === 'PAID') {
+            updData.balance = user.balance + Number(data.amount.value);
+          }
+          Users.findByIdAndUpdate(_id, updData, {new: true}).then((v) => {
+            return res.json({ balance: v.balance });
+          });
+
+        }).catch(e => {
+          // console.log(e);
+          return res.status(400).json({
+            errors: 'Error get balance'
+          });
+        });
+      }
+
+    } else {
+      return res.status(400).json({
+        errors: 'User does not exist'
+      });
+    }
+  });
+});
+
+router.post('/increasebalance', auth.required, (req, res, next) => {
+  const { payload: { _id } } = req;
+
+  let { body: { sum } } = req;
+  sum = Number(sum);
+  if(!sum || sum <= 0) {
+    return res.status(400).json({
+      errors: 'Bill sum is incorrect'
+    });
+  }
+
+  Users.findById(_id, '').then(user => {
+    if(user) {
+      const qiwiApi = new QiwiBillPaymentsAPI(SECRET_KEY);
+
+      let qiwiApiCreateBill = (billId, fields) => {
+        // return Promise.reject();
+        // return Promise.resolve();
+        return new Promise((responce, reject) => {
+          qiwiApi.createBill( billId, fields )
+            .then(data => responce(data))
+            .catch(error => reject(error));
+        })
+      };
+
+      const billId = user._id + '-' + new Date().getTime();
+      const fields = {
+        amount: sum,
+        currency: 'RUB',
+        comment: 'Тест 2. Проверка выставления счета.',
+        expirationDateTime: qiwiApi.getLifetimeByDay(1)
+        //email: 'example@mail.org',
+        //account : 'client4563',
+        //successUrl: 'http://test.ru/'
+      };
+
+      qiwiApiCreateBill(billId, fields).then(data => {
+        // console.log(data);
+        let updData = {
+          billId: billId, billStatus: 'WAITING'
+        };
+        Users.findByIdAndUpdate(_id, updData).then(() => {
+          // return res.json({ message: 'success increasebalance' });
+          return res.json({ payUrl: data.payUrl });
+        })
+      }).catch(e => {
+        // console.log(e);
+        return res.status(400).json({
+          errors: 'Error createBill'
+        });
+      });
+
+    } else {
+      return res.status(400).json({
+        errors: 'User does not exist'
+      });
+    }
+  });
+});
+
+/*
+router.get('/bill/:action', auth.required, (req, res, next) => {
+
+  let allowRoutes = ['create', 'getinfo'];
+  if (!allowRoutes.includes(req.params.action)) {
+    return res.status(400).json({
+      errors: { message: 'This route does not exist' }
+    });
+  }
+
+  const { payload: { _id } } = req;
+
+  Users.findById(_id, 'billId billStatus').then(user => {
+    if(user) {
+      const QiwiBillPaymentsAPI = require('@qiwi/bill-payments-node-js-sdk');
+      const SECRET_KEY = 'eyJ2ZXJzaW9uIjoiUDJQIiwiZGF0YSI6eyJwYXlpbl9tZXJjaGFudF9zaXRlX3VpZCI6InUzbjI0Mi0wMCIsInVzZXJfaWQiOiI3OTIyNDgxOTAwMCIsInNlY3JldCI6ImQwNWQzNjViZDdmNzk4MGYyOGY2NDAxMzhmMGJhNmI2NzViYTgyNjNjMDI0NzNhM2JmMDM2MjU5NzQ4ODBjYzYifX0=';
+      const qiwiApi = new QiwiBillPaymentsAPI(SECRET_KEY);
+
+      // ==== выставляем счет ====
+      if (req.params.action === 'create') {
+
+        let { body: { sum } } = req;
+        sum = Number(sum);
+        if(!sum || sum <= 0) {
+          return res.status(400).json({
+            errors: { message: 'Bill sum is incorrect' }
+          });
+        }
+
+        let qiwiApiCreateBill = (billId, fields) => {
+          // return Promise.reject();
+          return Promise.resolve();
+          return new Promise((responce, reject) => {
+            qiwiApi.createBill( billId, fields )
+              .then(data => responce(data))
+              .catch(error => reject(error));
+          })
+        };
+
+        const billId = user._id + '-' + new Date().getTime();
+        const fields = {
+          amount: sum,
+          currency: 'RUB',
+          comment: 'Тест 2. Проверка выставления счета.',
+          expirationDateTime: qiwiApi.getLifetimeByDay(1)
+          //email: 'example@mail.org',
+          //account : 'client4563',
+          //successUrl: 'http://test.ru/'
+        };
+
+        qiwiApiCreateBill(billId, fields).then(data => {
+          // console.log(data);
+          let updData = {billId: billId, billStatus: 'WAITING'};
+          Users.findByIdAndUpdate(_id, updData).then(() => {
+            return res.json({ message: 'success createBill' });
+          })
+        }).catch(e => {
+          // console.log(e);
+          return res.status(400).json({
+            errors: { message: 'Error createBill' }
+          });
+        });
+      }
+
+      // ==== получаем инфо о счете ====
+      if (req.params.action === 'getinfo') {
+
+        if (user.billStatus === 'PAID') {
+          return res.json({ message: 'success createBill' });
+        }
+        console.log(user)
+        // qiwiApi.getBillInfo(billId).then( data => {
+        //   console.log(data);
+        //   return res.json({ billInfo: data });
+        // });
+      }
+
     } else {
       return res.status(400).json({
         errors: { message: 'User does not exist' }
@@ -101,6 +274,7 @@ router.get('/balance', auth.required, (req, res, next) => {
     }
   });
 });
+*/
 
 /*
 router.get('/:id', auth.required, (req, res, next) => {
