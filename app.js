@@ -8,9 +8,6 @@ const mongoose = require('mongoose');
 const errorHandler = require('errorhandler');
 const CronJob = require('cron').CronJob;
 
-new CronJob('0 20 * * *', function() {
-  console.log('You will see this message every second');
-}, null, true, 'Asia/Yekaterinburg');
 
 //Configure mongoose's promise to global promise
 mongoose.promise = global.Promise;
@@ -65,6 +62,13 @@ app.use((err, req, res, next) => {
     },
   });
 });
+
+const lotteryController = require('./controllers/lotteries');
+new CronJob('0 20 * * *', function() { /* every day at 8 p.m. */
+// new CronJob('*/1 * * * *', function() { /* every 2 minutes */
+  // console.log('You will see this message every second');
+  lotteryController.startLottery();
+}, null, true, 'Asia/Yekaterinburg');
 
 mongoose.connect('mongodb://localhost:33017/charity').catch(error => {
   console.log(`Connect to DB ... ERROR: "${error.message}"`);

@@ -1,7 +1,6 @@
 .DS_Store
 node_modules/
-logs/error.log
-logs/success.log
+logs/
 public/
 dist/
 npm-debug.log

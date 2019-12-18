@@ -70,11 +70,11 @@ router.get('/result', auth.required, (req, res, next) => {
   });
 });
 
-router.get('/start', (req, res, next) => {
-  lotteryController.startLottery();
-  return res.status(200).json({
-    errors: 'Lottery started !!!'
-  });
-});
+// router.get('/start', (req, res, next) => {
+//   lotteryController.startLottery();
+//   return res.status(200).json({
+//     errors: 'Lottery started !!!'
+//   });
+// });
 
 module.exports = router;
