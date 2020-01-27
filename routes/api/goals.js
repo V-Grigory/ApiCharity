@@ -5,12 +5,22 @@ const auth = require('../auth');
 // const logger = require('../../logger');
 const utils = require('../../utils');
 const Goals = mongoose.model('Goals');
+const Images = mongoose.model('Images');
 
 router.get('/', (req, res, next) => {
   let fields = 'type title description';
 
   return Goals.find({}, fields).then((goals) => {
-    return res.json({ goals: goals });
+
+    const setImages = async () => {
+      for (let g of goals) {
+        await Images.find({ goal_id: g._id }, 'url').then(v => {
+          let images = v.map(v => v.url);
+          g.set('files', images, {strict: false});
+        });
+      }
+    };
+    setImages().then(() => res.json({ goals: goals }));
   });
 });
 
@@ -23,7 +33,13 @@ router.get('/:_id', (req, res, next) => {
         errors: 'Goal does not exist'
       });
     }
-    return res.json({ goal: goal });
+    const setImages = async () => {
+      await Images.find({ goal_id: goal._id }, 'url').then(v => {
+        let images = v.map(v => v.url);
+        goal.set('files', images, {strict: false});
+      });
+    };
+    setImages().then(() => res.json({ goal: goal }));
   })
   .catch(() => {
     return res.status(500).json({
