@@ -15,8 +15,8 @@ router.get('/', (req, res, next) => {
     const setImages = async () => {
       for (let g of goals) {
         await Images.find({ goal_id: g._id }, 'url').then(v => {
-          let images = v.map(v => v.url);
-          g.set('files', images, {strict: false});
+          //let images = v.map(v => v.url);
+          g.set('files', v, {strict: false});
         });
       }
     };
@@ -35,8 +35,8 @@ router.get('/:_id', (req, res, next) => {
     }
     const setImages = async () => {
       await Images.find({ goal_id: goal._id }, 'url').then(v => {
-        let images = v.map(v => v.url);
-        goal.set('files', images, {strict: false});
+        //let images = v.map(v => v.url);
+        goal.set('files', v, {strict: false});
       });
     };
     setImages().then(() => res.json({ goal: goal }));
