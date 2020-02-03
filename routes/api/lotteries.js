@@ -27,10 +27,12 @@ router.post('/join', auth.required, (req, res, next) => {
       });
     }
     if(user[0].balance >= appConfig.balanceAmountForJoinLottery) {
-      lotteryController.addUserToLottery(user[0]).then((v) => {
-        return res.status(200).json({
-          message: v
-        });
+      lotteryController.addUserToLottery(user[0])
+      .then(v => {
+        return res.status(200).json({ message: v });
+      })
+      .catch(v => {
+        return res.status(400).json({ errors: v });
       });
     } else {
       return res.status(400).json({
@@ -50,9 +52,17 @@ router.post('/join', auth.required, (req, res, next) => {
 });
 
 router.get('/timetostart', (req, res, next) => {
-  return res.status(200).json({
-    timetostart: lotteryController.timeToStart()
-  });
+  lotteryController.timeToStart()
+    .then(v => {
+      return res.status(200).json({ timetostart: v });
+    })
+    .catch(v => {
+      return res.status(400).json({ errors: v });
+    });
+
+  // return res.status(200).json({
+  //   timetostart: lotteryController.timeToStart()
+  // });
 });
 
 router.get('/result', auth.required, (req, res, next) => {
