@@ -51,6 +51,21 @@ router.post('/join', auth.required, (req, res, next) => {
 
 });
 
+router.get('/checkjoin', auth.required, (req, res, next) => {
+  const { payload: { _id } } = req;
+  Users.findById(_id, 'id balance').then(user => {
+    if(user) {
+      lotteryController.checkAddedUserToLottery(user).then(v => {
+        return res.status(200).json({ result: v })
+      });
+    } else {
+      return res.status(400).json({
+        errors: 'User does not exist'
+      });
+    }
+  });
+});
+
 router.get('/timetostart', (req, res, next) => {
   lotteryController.timeToStart()
     .then(v => {
@@ -59,10 +74,6 @@ router.get('/timetostart', (req, res, next) => {
     .catch(v => {
       return res.status(400).json({ errors: v });
     });
-
-  // return res.status(200).json({
-  //   timetostart: lotteryController.timeToStart()
-  // });
 });
 
 router.get('/result', auth.required, (req, res, next) => {
