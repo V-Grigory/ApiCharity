@@ -71,7 +71,8 @@ new CronJob('0 20 * * *', function() { /* every day at 8 p.m. */
   lotteryController.startLottery();
 }, null, true, 'Asia/Yekaterinburg');
 
-mongoose.connect('mongodb://localhost:33017/charity').catch(error => {
+let mongoPort = process.env.MONGODB_PORT;
+mongoose.connect(`mongodb://localhost:${mongoPort}/charity`).catch(error => {
   console.log(`Connect to DB ... ERROR: "${error.message}"`);
   process.exit(1);
 });
