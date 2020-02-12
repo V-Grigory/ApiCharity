@@ -32,7 +32,7 @@ const fileFilter = (req, file, cb) => {
     cb (null, false);
   }
 };
-const multerOptions = { storage: storageConfig, fileFilter: fileFilter };
+const multerOptions = { storage: storageConfig };
 const upload = multer(multerOptions).array('files');
 
 const deleteFiles = (files) => {

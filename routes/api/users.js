@@ -5,7 +5,7 @@ const auth = require('../auth');
 const utils = require('../../utils');
 const Users = mongoose.model('Users');
 const QiwiBillPaymentsAPI = require('@qiwi/bill-payments-node-js-sdk');
-const SECRET_KEY = 'eyJ2ZXJzaW9uIjoiUDJQIiwiZGF0YSI6eyJwYXlpbl9tZXJjaGFudF9zaXRlX3VpZCI6InUzbjI0Mi0wMCIsInVzZXJfaWQiOiI3OTIyNDgxOTAwMCIsInNlY3JldCI6ImQwNWQzNjViZDdmNzk4MGYyOGY2NDAxMzhmMGJhNmI2NzViYTgyNjNjMDI0NzNhM2JmMDM2MjU5NzQ4ODBjYzYifX0=';
+const SECRET_KEY = process.env.QIWI_BILL_SECRET_KEY;
 
 router.post('/registration', auth.optional, (req, res, next) => {
   const { body: { user } } = req;

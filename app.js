@@ -7,6 +7,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const errorHandler = require('errorhandler');
 const CronJob = require('cron').CronJob;
+require('dotenv').config();
 
 
 //Configure mongoose's promise to global promise
