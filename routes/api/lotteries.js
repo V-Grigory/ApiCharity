@@ -3,6 +3,7 @@ const router = require('express').Router();
 const appConfig = require('../../config/app');
 const auth = require('../auth');
 const Users = mongoose.model('Users');
+const Lotteries = mongoose.model('Lotteries');
 const lotteryController = require('../../controllers/lotteries');
 
 router.post('/join', auth.required, (req, res, next) => {
@@ -89,6 +90,42 @@ router.get('/result', auth.required, (req, res, next) => {
       });
     }
   });
+});
+
+router.get('/winners', auth.required, (req, res, next) => {
+  const { payload: { _id, role } } = req;
+
+  if(!_id || !role) {
+    return res.status(400).json({
+      errors: 'Not exists data in token!'
+    });
+  }
+
+  if(role !== 'admin') {
+    return res.status(400).json({
+      errors: 'User must have admin role'
+    });
+  }
+
+  Lotteries.findOne({statusLottery: 'close'}).sort({_id: -1})
+    .then(lottery => {
+      if(lottery) {
+        if(lottery.members.length === 0) {
+          return res.status(200).json([])
+        }
+        let winners = lottery.members
+            .filter(v => v.winSum > 0).map(v => v.id);
+
+        Users.find({id: winners}).then(users => {
+          return res.status(200).json(
+            users.map(v => { return { id: v.id, email: v.email } })
+          )
+        });
+      } else {
+        return res.status(200).json([])
+        // responce('Lottery has not yet been finished')
+      }
+    })
 });
 
 // router.get('/start', (req, res, next) => {
