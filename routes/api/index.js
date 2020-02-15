@@ -15,19 +15,19 @@ router.post('/sendemail', auth.required, (req, res, next) => {
 
   if(!email) {
     return res.status(422).json({
-      errors: 'Email object is required'
+      errors: 'Email объект необходим'
     });
   }
 
   if(!email.to) {
     return res.status(422).json({
-      errors: 'To is required'
+      errors: 'To необходим'
     });
   }
 
   if(!email.message) {
     return res.status(422).json({
-      errors: 'Message is required'
+      errors: 'Message необходим'
     });
   }
 
@@ -79,7 +79,7 @@ router.post('/sendemail', auth.required, (req, res, next) => {
       logger.logSuccess('Send email. (' + email.to + ')');
       return res.status(200).json({
         success: {
-          message: 'Email successfully sent!',
+          message: 'Email сообщение успешно отправлено!',
         },
       });
     })
@@ -87,7 +87,7 @@ router.post('/sendemail', auth.required, (req, res, next) => {
       logger.logError(objectError);
       // console.log(objectError);
       return res.status(500).json({
-        errors: 'Email not sent'
+        errors: 'Ошибка отправки email'
       });
     });
 

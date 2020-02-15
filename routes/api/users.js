@@ -21,7 +21,7 @@ router.post('/registration', auth.optional, (req, res, next) => {
       Users.find({}, 'id email').then(users => {
         if(users.find(v => v.email === user.email)) {
           return res.status(422).json({
-            errors: 'This email already exist'
+            errors: 'Этот email уже существует'
           })
         }
         if(users.length === 0) {
@@ -74,7 +74,7 @@ router.post('/login', auth.optional, (req, res, next) => {
     if(err) {
       // return next(err);
       return res.status(422).json({
-        errors: 'email or password: is invalid'
+        errors: 'Некорректный логин или пароль'
       });
     }
 
@@ -117,14 +117,14 @@ router.get('/balance', auth.required, (req, res, next) => {
         }).catch(e => {
           // console.log(e);
           return res.status(400).json({
-            errors: 'Error get balance'
+            errors: 'Ошибка получения баланса'
           });
         });
       }
 
     } else {
       return res.status(400).json({
-        errors: 'User does not exist'
+        errors: 'Пользователь не существует'
       });
     }
   });
@@ -137,7 +137,7 @@ router.post('/increasebalance', auth.required, (req, res, next) => {
   sum = Number(sum);
   if(!sum || sum <= 0) {
     return res.status(400).json({
-      errors: 'Bill sum is incorrect'
+      errors: 'Некорректная сумма баланса'
     });
   }
 
@@ -159,7 +159,7 @@ router.post('/increasebalance', auth.required, (req, res, next) => {
       const fields = {
         amount: sum,
         currency: 'RUB',
-        comment: 'Тест 2. Проверка выставления счета.',
+        comment: '',
         expirationDateTime: qiwiApi.getLifetimeByDay(1)
         //email: 'example@mail.org',
         //account : 'client4563',
@@ -178,13 +178,13 @@ router.post('/increasebalance', auth.required, (req, res, next) => {
       }).catch(e => {
         // console.log(e);
         return res.status(400).json({
-          errors: 'Error createBill'
+          errors: 'Ошибка выставления счета'
         });
       });
 
     } else {
       return res.status(400).json({
-        errors: 'User does not exist'
+        errors: 'Пользователь не существует'
       });
     }
   });

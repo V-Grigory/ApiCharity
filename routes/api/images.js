@@ -66,7 +66,7 @@ router.get('/:_id', (req, res, next) => {
   return Images.findById(req.params._id, fields).then((image) => {
     if(!image) {
       return res.status(400).json({
-        errors: 'Image does not exist'
+        errors: 'Изображение не существует'
       });
     }
     return res.json({ image: image });
@@ -76,7 +76,7 @@ router.get('/:_id', (req, res, next) => {
     //   errors: { message: 'Error BD' }
     // })
     return res.status(400).json({
-      errors: 'Image does not exist'
+      errors: 'Изображение не существует'
     });
   });
 });
@@ -87,14 +87,14 @@ router.post('/', auth.required, utils.accessOnlyAdmin, upload, (req, res, next) 
 
   if(req.files.length === 0) {
     return res.status(400).json({
-      errors: 'No images!'
+      errors: 'Нет изображений!'
     });
   }
 
   if(!req.body.goal_id) {
     deleteFiles(req.files);
     return res.status(400).json({
-      errors: 'No or incorrect goal_id!'
+      errors: 'Отсутствует или некорректный ИД цели!'
     });
   }
 
@@ -102,7 +102,7 @@ router.post('/', auth.required, utils.accessOnlyAdmin, upload, (req, res, next) 
     if(!goal) {
       deleteFiles(req.files);
       return res.status(400).json({
-        errors: 'Goal does not exist'
+        errors: 'Цель не существует'
       });
     }
     let loadedImages = [];
@@ -118,7 +118,7 @@ router.post('/', auth.required, utils.accessOnlyAdmin, upload, (req, res, next) 
     }
     loadImages().then(() => {
       return res.status(200).json({
-        message: 'Images successfully loaded',
+        message: 'Изображения успешно загружены',
         images: loadedImages
       });
     });
@@ -160,17 +160,17 @@ router.delete('/:_id', auth.required, utils.accessOnlyAdmin, (req, res, next) =>
     if(image) {
       deleteFile(image.url);
       return res.status(200).json({
-        message: 'Image successfully deleted'
+        message: 'Изображение успешно удалено'
       });
     } else {
       return res.status(400).json({
-        errors: 'This image does not exist'
+        errors: 'Это изображение не существует'
       });
     }
   })
   .catch(() => {
     return res.status(400).json({
-      errors: 'This image does not exist'
+      errors: 'Это изображение не существует'
     });
   })
 });

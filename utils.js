@@ -8,15 +8,15 @@ const checkUserData = (v) => {
   let ok = true;
   if(!v) {
     ok = false;
-    return {ok: ok, msg: 'object User is required'};
+    return {ok: ok, msg: 'Необходим объект User'};
   }
   if(!v.email) {
     ok = false;
-    return {ok: ok, msg: 'email is required'};
+    return {ok: ok, msg: 'email необходим'};
   }
   if(!v.password) {
     ok = false;
-    return {ok: ok, msg: 'password is required'};
+    return {ok: ok, msg: 'password необходим'};
   }
   return {ok};
 };
@@ -26,15 +26,15 @@ const checkRuleData = (v, target = 'forInsert') => {
     let ok = true;
     if(!v) {
       ok = false;
-      return {ok: ok, msg: 'object Rule is required'};
+      return {ok: ok, msg: 'Необходим объект Rule'};
     }
     if(!v.title) {
       ok = false;
-      return {ok: ok, msg: 'title is required'};
+      return {ok: ok, msg: 'title необходим'};
     }
     if(!v.description) {
       ok = false;
-      return {ok: ok, msg: 'description is required'};
+      return {ok: ok, msg: 'description необходим'};
     }
     return {ok};
   }
@@ -42,12 +42,12 @@ const checkRuleData = (v, target = 'forInsert') => {
     let ok = true;
     if(!v) {
       ok = false;
-      return {ok: ok, msg: 'object Rule is required'};
+      return {ok: ok, msg: 'Необходим объект Rule'};
     }
     if(!v.title && !v.description) {
       ok = false;
     }
-    return {ok: ok, msg: 'No data for update'};
+    return {ok: ok, msg: 'Нет данных для обновления'};
   }
 };
 
@@ -56,19 +56,19 @@ const checkGoalData = (v, target = 'forInsert') => {
     let ok = true;
     if(!v) {
       ok = false;
-      return {ok: ok, msg: 'object Goal is required'};
+      return {ok: ok, msg: 'Объект Goal необходим'};
     }
     if(!v.type) {
       ok = false;
-      return {ok: ok, msg: 'type is required'};
+      return {ok: ok, msg: 'type необходим'};
     }
     if(!v.title) {
       ok = false;
-      return {ok: ok, msg: 'title is required'};
+      return {ok: ok, msg: 'title необходим'};
     }
     if(!v.description) {
       ok = false;
-      return {ok: ok, msg: 'description is required'};
+      return {ok: ok, msg: 'description необходим'};
     }
     return {ok};
   }
@@ -76,12 +76,12 @@ const checkGoalData = (v, target = 'forInsert') => {
     let ok = true;
     if(!v) {
       ok = false;
-      return {ok: ok, msg: 'object Goal is required'};
+      return {ok: ok, msg: 'Объект Goal необходим'};
     }
     if(!v.type && !v.title && !v.description) {
       ok = false;
     }
-    return {ok: ok, msg: 'No data for update'};
+    return {ok: ok, msg: 'Нет данных для обновления'};
   }
 };
 

@@ -11,20 +11,20 @@ router.post('/join', auth.required, (req, res, next) => {
 
   if(!_id || !role) {
     return res.status(400).json({
-      errors: 'Not exists data in token!'
+      errors: 'Некорректный токен, отсутствуют данные!'
     });
   }
 
   if(role === 'admin') {
     return res.status(400).json({
-      errors: 'User with the admin role cannot participate in the lottery'
+      errors: 'Пользователь с ролью admin не может участвовать в лотерее'
     });
   }
 
   Users.find({_id: _id, role: 'user'}, 'id balance').then((user) => {
     if(user.length === 0) {
       return res.status(400).json({
-        errors: 'User does not exist'
+        errors: 'Пользователь не существует'
       });
     }
     if(user[0].balance >= appConfig.balanceAmountForJoinLottery) {
@@ -37,7 +37,7 @@ router.post('/join', auth.required, (req, res, next) => {
       });
     } else {
       return res.status(400).json({
-        errors: 'Balance not enough'
+        errors: 'Недостаточная сумма баланса'
       });
     }
   })
@@ -46,7 +46,7 @@ router.post('/join', auth.required, (req, res, next) => {
     //   errors: { message: 'Error BD' }
     // })
     return res.status(400).json({
-      errors: 'User does not exist'
+      errors: 'Пользователь не существует'
     });
   });
 
@@ -61,7 +61,7 @@ router.get('/checkjoin', auth.required, (req, res, next) => {
       });
     } else {
       return res.status(400).json({
-        errors: 'User does not exist'
+        errors: 'Пользователь не существует'
       });
     }
   });
@@ -86,7 +86,7 @@ router.get('/result', auth.required, (req, res, next) => {
       });
     } else {
       return res.status(400).json({
-        errors: 'User does not exist'
+        errors: 'Пользователь не существует'
       });
     }
   });
@@ -97,13 +97,13 @@ router.get('/winners', auth.required, (req, res, next) => {
 
   if(!_id || !role) {
     return res.status(400).json({
-      errors: 'Not exists data in token!'
+      errors: 'Нет данных в токене!'
     });
   }
 
   if(role !== 'admin') {
     return res.status(400).json({
-      errors: 'User must have admin role'
+      errors: 'Пользователь должен иметь роль admin'
     });
   }
 

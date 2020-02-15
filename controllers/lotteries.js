@@ -19,18 +19,18 @@ const addUserToLottery = (user) => {
     Lotteries.findOne().sort({_id: -1}).then((lottery) => {
       if(lottery) {
         if(lottery.members.find(v => Number(v.id) === Number(user.id))) {
-          reject('User already joined the lottery');
+          reject('Пользователь уже участвует в лотерее');
         } else {
           lottery.members.push({id: user.id});
           let query = {_id: lottery._id};
           let updData = {members: lottery.members};
           Lotteries.findOneAndUpdate(query, updData).then(() => {
             userController.takeOffBalance(user);
-            responce('User successfully joined the lottery');
+            responce('Пользовател успешно добавлен в участники');
           })
         }
       } else {
-        reject('no open lotteries');
+        reject('Нет открытых лотерей');
       }
     })
   })
@@ -95,7 +95,7 @@ const timeToStart = () => {
       if (lottery) {
         return responce(lottery.date - new Date())
       }
-      return reject ('no open lotteries')
+      return reject ('Нет открытых лотерей')
     })
   });
   //return dateLottery() - new Date()
@@ -115,7 +115,7 @@ const resultForUser = (user) => {
           responce({iswin: false})
         }
       } else {
-        responce('Lottery has not yet been finished')
+        responce('Лотерея еще не завершена')
       }
     })
   })

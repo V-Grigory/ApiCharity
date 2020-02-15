@@ -30,7 +30,7 @@ router.get('/:_id', (req, res, next) => {
   return Goals.findById(req.params._id, fields).then((goal) => {
     if(!goal) {
       return res.status(400).json({
-        errors: 'Goal does not exist'
+        errors: 'Цель не существует'
       });
     }
     const setImages = async () => {
@@ -79,11 +79,11 @@ router.put('/:_id', auth.required, utils.accessOnlyAdmin, (req, res, next) => {
 
   Goals.findOneAndUpdate(query, updData).then(() => {
     return res.status(200).json({
-      message: 'Goal successfully update'
+      message: 'Цель успешно обновлена'
     });
   }).catch(() => {
     return res.status(400).json({
-      errors: 'This goal does not exist'
+      errors: 'Эта цель не существует'
     });
   })
 });
@@ -98,12 +98,12 @@ router.delete('/:_id', auth.required, utils.accessOnlyAdmin, (req, res, next) =>
       });
     }
     return res.status(400).json({
-      errors: 'This goal does not exist'
+      errors: 'Эта цель не существует'
     });
   })
   .catch(() => {
     return res.status(400).json({
-      errors: 'This goal does not exist'
+      errors: 'Эта цель не существует'
     });
   })
 });

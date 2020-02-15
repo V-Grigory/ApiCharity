@@ -46,11 +46,11 @@ router.put('/:_id', auth.required, utils.accessOnlyAdmin, (req, res, next) => {
 
   Rules.findOneAndUpdate(query, updData).then(() => {
     return res.status(200).json({
-      message: 'Rule successfully update'
+      message: 'Правило успешно обновлено'
     });
   }).catch(() => {
     return res.status(400).json({
-      errors: 'This rule does not exist'
+      errors: 'Это правило не существует'
     });
   })
 });
@@ -60,16 +60,16 @@ router.delete('/:_id', auth.required, utils.accessOnlyAdmin, (req, res, next) =>
   Rules.findByIdAndRemove(req.params._id).then((v) => {
     if(v) {
       return res.status(200).json({
-        message: 'Rule successfully deleted'
+        message: 'Правило успешно удалено'
       });
     }
     return res.status(400).json({
-      errors: 'This rule does not exist'
+      errors: 'Это правило не существует'
     });
   })
   .catch(() => {
     return res.status(400).json({
-      errors: 'This rule does not exist'
+      errors: 'Это правило не существует'
     });
   })
 });
