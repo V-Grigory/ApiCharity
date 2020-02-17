@@ -52,6 +52,23 @@ const checkAddedUserToLottery = (user) => {
   })
 };
 
+const checkParticipateUserLastClosedLottery = (user) => {
+  return new Promise((responce, reject) => {
+    Lotteries.findOne({statusLottery: 'close'}).sort({_id: -1})
+    .then(lottery => {
+      if(lottery) {
+        if(lottery.members.find(v => Number(v.id) === Number(user.id))) {
+          return responce(true);
+        } else {
+          return responce(false)
+        }
+      } else {
+        return responce(false)
+      }
+    })
+  })
+};
+
 const startLottery = () => {
   Lotteries.findOne().sort({_id: -1}).then(lottery => {
     if(lottery) {
@@ -124,6 +141,7 @@ const resultForUser = (user) => {
 module.exports = lotteryController = {
   addUserToLottery,
   checkAddedUserToLottery,
+  checkParticipateUserLastClosedLottery,
   startLottery,
   timeToStart,
   resultForUser

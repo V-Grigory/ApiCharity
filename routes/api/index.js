@@ -50,6 +50,7 @@ router.post('/sendemail', auth.required, (req, res, next) => {
         }
       });
     } catch (e) {
+      logger.logError('nodemailer.createTransport. Fail !!!');
       throw ({
         srcError: 'nodemailer.createTransport',
         msgError: e
@@ -66,6 +67,7 @@ router.post('/sendemail', auth.required, (req, res, next) => {
 
     smtpTransport.sendMail(mailOptions, (error, info) => {
       if (error) {
+        logger.logError('smtpTransport.sendMail. Fail !!!');
         throw ({
           srcError: 'smtpTransport.sendMail',
           msgError: error

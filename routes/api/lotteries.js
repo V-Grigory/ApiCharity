@@ -92,6 +92,22 @@ router.get('/result', auth.required, (req, res, next) => {
   });
 });
 
+router.get('/checkclosedlotteryjoin', auth.required, (req, res, next) => {
+  const { payload: { _id } } = req;
+  Users.findById(_id, 'id balance').then(user => {
+    if(user) {
+      lotteryController.checkParticipateUserLastClosedLottery(user)
+      .then(v => {
+        return res.status(200).json({ result: v })
+      });
+    } else {
+      return res.status(400).json({
+        errors: 'Пользователь не существует'
+      });
+    }
+  });
+});
+
 router.get('/winners', auth.required, (req, res, next) => {
   const { payload: { _id, role } } = req;
 
