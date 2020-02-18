@@ -95,4 +95,10 @@ router.post('/sendemail', auth.required, (req, res, next) => {
 
 });
 
+// router.get('/dev', (req, res) => {
+//   return res.status(200).json({
+//     msg: 'hello'
+//   });
+// });
+
 module.exports = router;

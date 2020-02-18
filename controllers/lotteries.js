@@ -119,6 +119,20 @@ const timeToStart = () => {
 };
 
 const resultForUser = (user) => {
+
+  const formatLotteryDate = (lotteryDate) => {
+    const d = new Date(lotteryDate);
+    let day = d.getUTCDate();
+    let month = d.getUTCMonth();
+    month = Number(month) + 1;
+    if(month.toString().length === 1) {
+      month = '0' + month.toString();
+    }
+    let year = d.getUTCFullYear();
+
+    return `${day}.${month}.${year}`;
+  };
+
   return new Promise((responce, reject) => {
     Lotteries.findOne({statusLottery: 'close'}).sort({_id: -1})
     .then(lottery => {
@@ -126,10 +140,24 @@ const resultForUser = (user) => {
         let userWin = lottery.members.find(v => {
           return (Number(v.id) === Number(user.id)) && v.winSum > 0
         });
+        let lotteryDate = formatLotteryDate(lottery.date);
         if(userWin) {
-          responce({iswin: true, sum: userWin.winSum})
+          responce({
+            iswin: true,
+            message: 'По результатам проведения акции ' +
+                '( с 20.00 ' + lotteryDate + ' по 20.00 ' + lotteryDate + ' ) ' +
+                'вы стали победителем!',
+            sum: userWin.winSum
+          })
         } else {
-          responce({iswin: false})
+          responce({
+            iswin: false,
+            message: 'По результатам проведения акции ' +
+                '( с 20.00 ' + lotteryDate + ' по 20.00 ' + lotteryDate + ' ) ' +
+                'к сожалению вы не стали победителем, но помните, ' +
+                'что вы помогаете тем, кто в этом действительно нуждается, ' +
+                'большое вам спасибо'
+          })
         }
       } else {
         responce('Лотерея еще не завершена')
