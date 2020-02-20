@@ -74,14 +74,17 @@ const startLottery = () => {
     if(lottery) {
       // let usersWin = [];
       if(lottery.members.length >= 8) {
+        // first, third, seventh
         lottery.members[0].winSum = 10;
-        lottery.members[3].winSum = 10;
-        lottery.members[7].winSum = 10;
+        lottery.members[2].winSum = 10;
+        lottery.members[6].winSum = 10;
       }
       if(lottery.members.length >= 4) {
+        // first, third
         lottery.members[0].winSum = 10;
-        lottery.members[3].winSum = 10;
+        lottery.members[2].winSum = 10;
       }
+      // first
       if(lottery.members.length >= 1) {
         lottery.members[0].winSum = 10;
       }
@@ -121,16 +124,29 @@ const timeToStart = () => {
 const resultForUser = (user) => {
 
   const formatLotteryDate = (lotteryDate) => {
-    const d = new Date(lotteryDate);
-    let day = d.getUTCDate();
-    let month = d.getUTCMonth();
-    month = Number(month) + 1;
-    if(month.toString().length === 1) {
-      month = '0' + month.toString();
-    }
-    let year = d.getUTCFullYear();
 
-    return `${day}.${month}.${year}`;
+    const checkTwoCharacter = (v) => {
+      if(v.toString().length === 1) {
+        return '0' + v.toString();
+      }
+      return v;
+    };
+
+    const getDate = (date, beforeOneDay = false) => {
+      let d = new Date(date);
+      if(beforeOneDay) {
+        d.setDate(d.getDate() - 1);
+      }
+      let day = checkTwoCharacter(d.getUTCDate());
+      let month = checkTwoCharacter(Number(d.getUTCMonth()) + 1);
+      let year = d.getUTCFullYear();
+      return `${day}.${month}.${year}`
+    };
+
+    return [
+      getDate(lotteryDate, true),
+      getDate(lotteryDate)
+    ];
   };
 
   return new Promise((responce, reject) => {
@@ -145,7 +161,7 @@ const resultForUser = (user) => {
           responce({
             iswin: true,
             message: 'По результатам проведения акции ' +
-                '( с 20.00 ' + lotteryDate + ' по 20.00 ' + lotteryDate + ' ) ' +
+                '( с 20.00 ' + lotteryDate[0] + ' по 20.00 ' + lotteryDate[1] + ' ) ' +
                 'вы стали победителем!',
             sum: userWin.winSum
           })
@@ -153,7 +169,7 @@ const resultForUser = (user) => {
           responce({
             iswin: false,
             message: 'По результатам проведения акции ' +
-                '( с 20.00 ' + lotteryDate + ' по 20.00 ' + lotteryDate + ' ) ' +
+                '( с 20.00 ' + lotteryDate[0] + ' по 20.00 ' + lotteryDate[1] + ' ) ' +
                 'к сожалению вы не стали победителем, но помните, ' +
                 'что вы помогаете тем, кто в этом действительно нуждается, ' +
                 'большое вам спасибо'
